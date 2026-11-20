@@ -2,7 +2,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ChatMemberHandler, ContextTypes, filters
 import random
 
-TOKEN = '9150891723:AAGnIETBZk0mNt-RwSCKxon69DkRTDUVVW0'
+TOKEN = '9150891723:AAHzrIAsroSej-_dSJ1OV5gAzajNKWdZO30'
 LINK_WA = 'https://whatsapp.com/channel/0029Vb9o0UK6xCSKKONlnA3r'
 
 async def start(update, context):
