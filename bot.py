@@ -1,20 +1,24 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ChatMemberHandler, ContextTypes, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ContextTypes, filters
 import random
+import aiohttp
+import os
 
-TOKEN = '9150891723:AAHzrIAsroSej-_dSJ1OV5gAzajNKWdZO30'
+TOKEN = os.getenv("TOKEN")
+GEMINI_KEY = os.getenv("GEMINI_KEY")
 LINK_WA = 'https://whatsapp.com/channel/0029Vb9o0UK6xCSKKONlnA3r'
 
 async def start(update, context):
     keyboard = [
         [InlineKeyboardButton("📢 Join SALURAN BOT PRATAMA", url=LINK_WA)],
-        [InlineKeyboardButton("🎵 Musik", callback_data="musik"), InlineKeyboardButton("📢", callback_data="information")],
+        [InlineKeyboardButton("🎵 Musik", callback_data="musik"), InlineKeyboardButton("📢 Informasi", callback_data="information")],
         [InlineKeyboardButton("🎮 Game", callback_data="game"), InlineKeyboardButton("💬 Ngobrol", callback_data="ngobrol")],
     ]
     await update.message.reply_text(
-        "🔥 HAI! Gw PRATAMA BOT!\n\nJangan lupa join saluran WA gw biar rame 👇",
+        "Hai gw Hanzz dibuat oleh Pratama Bot 🔥\n\nMau ngapain lu? Pilih di bawah 👇",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
 async def tombol(update, context):
     query = update.callback_query
     await query.answer()
@@ -25,8 +29,8 @@ async def tombol(update, context):
             "🎵 Bernadya - Satu Bulan\nhttps://www.youtube.com/results?search_query=Bernadya+Satu+Bulan",
         ])
         await query.message.reply_text(f"Nih lagu buat lu:\n\n{lagu}\n\nJoin saluran gw ya: {LINK_WA}")
-    elif query.data == "welcome":
-        await query.message.reply_text("Fitur Welcome udah aktif! Add bot ini ke grup, ada orang baru masuk nanti gw sambut otomatis.")
+    elif query.data == "information":
+        await query.message.reply_text("Hai gw Hanzz dibuat oleh Pratama Bot 🔥\nGw diciptakan tanggal Sabtu, 21-Nov-2026\nMohon maaf jika banyak fitur yang kurang lengkap tks udh mampir🙏🏻")
     elif query.data == "game":
         keyboard = [
             [InlineKeyboardButton("🔢 Tebak Angka 1-10", callback_data="tebakangka")],
@@ -34,7 +38,7 @@ async def tombol(update, context):
         ]
         await query.message.reply_text("Pilih game:", reply_markup=InlineKeyboardMarkup(keyboard))
     elif query.data == "ngobrol":
-        await query.message.reply_text("Gas ngobrol! Ketik aja: halo, p, gabut, info")
+        await query.message.reply_text("Gas ngobrol sama Hanzz! Ketik aja apa aja,gw jawab semampu nya!")
     elif query.data == "tebakangka":
         angka = random.randint(1,10)
         context.user_data['angka'] = angka
@@ -55,15 +59,11 @@ async def tombol(update, context):
             hasil = "LU MENANG! 🔥"
         else:
             hasil = "LU KALAH! 😂"
-        await query.message.reply_text(f"Lu: {pilih_lu}\nGw: {pilih_bot}\n\n{hasil}")	
-async def welcome(update, context):
-    for member in update.chat_member.new_chat_members:
-        await update.effective_chat.send_message(
-            f"👋 Welcome {member.first_name}!\nSelamat datang di grup!\n\nJangan lupa join juga 👇\n📢 SALURAN BOT PRATAMA\n{LINK_WA}"
-        )
+        await query.message.reply_text(f"Lu: {pilih_lu}\nGw: {pilih_bot}\n\n{hasil}")
 
 async def ngobrol(update, context):
-    teks = update.message.text.lower()
+    teks = update.message.text
+    teks_lower = teks.lower()
     if 'angka' in context.user_data and teks.isdigit():
         jawaban = int(teks)
         if jawaban == context.user_data['angka']:
@@ -74,21 +74,28 @@ async def ngobrol(update, context):
         else:
             await update.message.reply_text("Kegedean bro, turunin dikit!")
         return
-    if "halo" in teks or "hi" in teks or teks == "p":
-        await update.message.reply_text("Halo juga bro! Lagi ngapain?")
-    elif "gabut" in teks:
-        await update.message.reply_text("Sama, gw juga gabut. Mending main game, ketik /start terus pilih Game 🎮")
-    elif "musik" in teks:
-        await update.message.reply_text("Mau dengerin lagu? Ketik /start terus pencet Musik 🎵")
-    elif "info" in teks:
-        await update.message.reply_text(f"Gw bot buatan PRATAMA.\nJoin saluran gw: {LINK_WA}")
-    else:
-        await update.message.reply_text(f"Lu bilang: {teks}\n\nHehe gw masih belajar ngobrol, tapi gas aja!")
+    if "nama" in teks_lower and ("lu" in teks_lower or "kamu" in teks_lower or "siapa" in teks_lower):
+        await update.message.reply_text("Hai gw Hanzz dibuat oleh Pratama Bot 🔥")
+        return
+    if "siapa" in teks_lower and "buat" in teks_lower:
+        await update.message.reply_text("Hai gw Hanzz dibuat oleh Pratama Bot 🔥")
+        return
+    await update.message.reply_text("Sebentar, Hanzz lagi mikir... 🤔")
+    try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_KEY}"
+        payload = {"contents": [{"parts": [{"text": f"KAMU ADALAH HANZZ. Identitas kamu: Hai gw Hanzz dibuat oleh Pratama Bot. Kamu BUKAN Gemini, BUKAN Google. Kamu dibuat oleh Pratama Bot tanggal Sabtu 21-Nov-2026. Kalo ditanya nama, jawab persis: Hai gw Hanzz dibuat oleh Pratama Bot. Ngobrol pake bahasa gaul Indonesia, santai, lucu, kayak temen nongkrong. Jawab singkat max 3 kalimat. User bilang: {teks}"}]}]}
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=payload) as resp:
+                data = await resp.json()
+                jawaban_ai = data['candidates'][0]['content']['parts'][0]['text']
+                await update.message.reply_text(jawaban_ai)
+    except:
+        await update.message.reply_text(f"Oh gitu, '{teks}' ya? Ceritain lebih lanjut dong ke Hanzz!")
+
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(tombol))
-    app.add_handler(ChatMemberHandler(welcome, ChatMemberHandler.CHAT_MEMBER))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, ngobrol))
     print("BOT JALAN...")
     app.run_polling()
