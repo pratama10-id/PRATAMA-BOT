@@ -8,7 +8,7 @@ LINK_WA = 'https://whatsapp.com/channel/0029Vb9o0UK6xCSKKONlnA3r'
 async def start(update, context):
     keyboard = [
         [InlineKeyboardButton("📢 Join SALURAN BOT PRATAMA", url=LINK_WA)],
-        [InlineKeyboardButton("🎵 Musik", callback_data="musik"), InlineKeyboardButton("👋 Welcome", callback_data="welcome")],
+        [InlineKeyboardButton("🎵 Musik", callback_data="musik"), InlineKeyboardButton("📢", callback_data="information")],
         [InlineKeyboardButton("🎮 Game", callback_data="game"), InlineKeyboardButton("💬 Ngobrol", callback_data="ngobrol")],
     ]
     await update.message.reply_text(
