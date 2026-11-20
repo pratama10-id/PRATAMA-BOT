@@ -1,9 +1,12 @@
+from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ContextTypes, filters
 import random
 import aiohttp
 import os
 
+# Baca variabel dari .env / environment hosting
+load_dotenv()
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 GEMINI_KEY = os.getenv("GEMINI_KEY")
 LINK_WA = 'https://whatsapp.com/channel/0029Vb9o0UK6xCSKKONlnA3r'
@@ -103,4 +106,4 @@ def main():
 if __name__ == "__main__":
     import asyncio
     asyncio.run(main())
-        
+            
