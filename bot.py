@@ -8,7 +8,7 @@ TOKEN = os.getenv("TOKEN")
 GEMINI_KEY = os.getenv("GEMINI_KEY")
 LINK_WA = 'https://whatsapp.com/channel/0029Vb9o0UK6xCSKKONlnA3r'
 
-async def start(update, context):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("📢 Join SALURAN BOT PRATAMA", url=LINK_WA)],
         [InlineKeyboardButton("🎵 Musik", callback_data="musik"), InlineKeyboardButton("📢 Informasi", callback_data="information")],
@@ -19,7 +19,7 @@ async def start(update, context):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-async def tombol(update, context):
+async def tombol(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     if query.data == "musik":
@@ -61,7 +61,7 @@ async def tombol(update, context):
             hasil = "LU KALAH! 😂"
         await query.message.reply_text(f"Lu: {pilih_lu}\nGw: {pilih_bot}\n\n{hasil}")
 
-async def ngobrol(update, context):
+async def ngobrol(update: Update, context: ContextTypes.DEFAULT_TYPE):
     teks = update.message.text
     teks_lower = teks.lower()
     if 'angka' in context.user_data and teks.isdigit():
@@ -101,4 +101,6 @@ def main():
     app.run_polling()
 
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(main())
+                                  
